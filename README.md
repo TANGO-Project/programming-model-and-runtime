@@ -34,9 +34,9 @@ The TANGO Programming Model and Runtime Abstraction Layer is a combination of th
 To install the whole framework you just need to checkout the code and run the following command
 
 ```bash
-$ git clone https://github.com/TANGO-Project/programming-model-and-runtime.git
+$ git clone --recursive https://github.com/TANGO-Project/programming-model-and-runtime.git
 
-$ cd programming-model-runtime/
+$ cd programming-model-and-runtime/
 
 $ ./install.sh <Installation_Prefix> [options]
 
