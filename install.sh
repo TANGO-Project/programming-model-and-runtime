@@ -46,4 +46,4 @@ cd ${src_path}/OmpSs/mcxx
 
 echo "autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install"
 
-autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install clean
+autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install clean
