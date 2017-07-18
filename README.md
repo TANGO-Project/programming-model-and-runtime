@@ -5,7 +5,7 @@
 
 The TANGO Programming Model and Runtime Abstraction Layer is a combination of the BSC's COMPSs and OmpSs task-based programming models, where COMPSs is dealing with the coarse-grain tasks and platform-level heterogeneity and OmpSs is dealing with fine-grain tasks and node-level heterogeneity.
 
-## Installation Guide:
+## Installation Guide
 
 ### Dependencies:
 #### Common
