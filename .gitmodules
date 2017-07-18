@@ -1,6 +1,3 @@
-[submodule "COMPSs"]
-	path = COMPSs
-	url = https://github.com/TANGO-Project/compss-tango.git
 [submodule "OmpSs/nanox"]
 	path = OmpSs/nanox
 	url = https://github.com/TANGO-Project/nanox.git
