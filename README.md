@@ -1,11 +1,14 @@
 # TANGO Programming Model and Runtime Abstraction Layer
-&copy; Barcelona Supercomputing Center 2016
+&copy; Barcelona Supercomputing Center 2016 -2017
+
+## Description
 
 The TANGO Programming Model and Runtime Abstraction Layer is a combination of the BSC's COMPSs and OmpSs task-based programming models, where COMPSs is dealing with the coarse-grain tasks and platform-level heterogeneity and OmpSs is dealing with fine-grain tasks and node-level heterogeneity.
 
-## Dependencies:
+## Installation Guide:
 
-### Common:
+### Dependencies:
+#### Common
 - Supported platforms running Linux (i386, x86-64, ARM, PowerPC or IA64)
 - Apache maven 3.0 or better
 - Java SDK 8.0 or better
@@ -20,16 +23,16 @@ The TANGO Programming Model and Runtime Abstraction Layer is a combination of th
 - SQLite 3.6.16 or better. 
 
 
-### --with-monitor option:
+#### --with-monitor option:
 - xdg-utils package 
 - graphviz package
 
-### --with-tracing option
+#### --with-tracing option
 - libxml2-devel 2.5.0 or better 
 - gcc-fortran
 - papi-devel (sugested)
 
-## Install
+### Installation script
 
 To install the whole framework you just need to checkout the code and run the following command
 
@@ -51,7 +54,9 @@ $./install.sh $HOME/TANGO --no-monitor --no-tracing
 $ sudo -E ./install.sh /opt/TANGO
 ```
 
-## Application Development Overview
+## User Guide
+
+### Application Development Overview
 
 To develop an application with the TANGO programming model, developers has to at least implement 3 files: the application main workflow in appName.c/cc, the application functions which are going to be coarse-grain tasks in appName.idl, and the implementation of the functions in appName-functions.cc. Other application files can be included in a src folder providing the building configuration in a Makefile   
 
@@ -65,7 +70,7 @@ More information about how to define coarse-grain tasks and other concerns when 
 
 More information about how to define fine-grain tasks and other considerations when implementing a fine-grain task workflow can be found in https://pm.bsc.es/ompss-docs/specs/
 
-## Application Compilation
+### Application Compilation
 
 ```bash
 $export WITH_OMPSS=1 #If there are coarse-grain tasks defined as a workflow of fine-grain task
@@ -77,7 +82,7 @@ $export WITH_OCL=1   #If there are fine-grain tasks defined for a OpenCL device
 $compss_build_app appName
 ```
 
-## Application Execution
+### Application Execution
 
 An application implemented with the TANGO programming model can be easily executed by using the COMPSs execution scripts. It will automatically starts the Runtime Abstraction Layer and execute transparently either coarse-grain and fine-grain tasks in the selected resources. 
 
@@ -114,11 +119,18 @@ Usage: enqueue_compss [queue_system_options] [rucompss_options] application_name
 The following command show how to queue the application by requesting 3 nodes with at least 12 cores, 2 gpus and 32GB of memory (approx.)
 
 ```bash
-$ enqueue_compss --num_nodes=3 --tasks-per-node=12 --gpus-per-node=2 --node-memory=32000 --lang=c appName appArgs
+$ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 --node-memory=32000 --lang=c appName appArgs
 ```
 Other options available for enqueue_compss can be found by executing 
 
 ```bash
 $ enqueue_compss --help
 ```
+## Relation to other TANGO components
 
+TANGO Programming Model and the Runtime Abstraction Layer components must be used together as explained above. It can be combined with other TANGO components to achive more complex features:
+
+* **ALDE** - TANGO Programming Model and Runtime will use ALDE to submit the code for compilation and packetization. Also it could be intereact with ALDE to submit the application directly to a TANGO compatible device supervisor.
+* **Device Supervisor** -  The TANGO Programming Model Runtime can interact directly with SLURM which is one TANGO Device Supervisor. Other device supervisors will be supported by means of ALDE. 
+* **Self-Adaptation Manager** - The TANGO Programming Model Runtime will interact with the Self-Adaptation Manager to optimize application execution in a TANGO compatible testbed.
+* **Monitor Infrastructure** - The TANGO Programming Model Runtime will interact with TANGO Monitor Infrastructure to obtain the energy consumption metrics in order to take runtime optimization decisions.
