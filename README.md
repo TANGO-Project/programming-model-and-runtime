@@ -72,14 +72,52 @@ More information about how to define fine-grain tasks and other considerations w
 
 ### Application Compilation
 
+To compile the application use the compss_build_app script. The usage of this command is the following
+
 ```bash
-$export WITH_OMPSS=1 #If there are coarse-grain tasks defined as a workflow of fine-grain task
+$ compss_build_app --help
+Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_name
 
-$export WITH_CUDA=1  #If there are fine-grain tasks defined for a cuda device
+* Options:
+  General:
+    --help, -h                              Print this help message
 
-$export WITH_OCL=1   #If there are fine-grain tasks defined for a OpenCL device
+    --opts                                  Show available options
 
-$compss_build_app appName
+    --version, -v                           Print COMPSs version
+
+  Tools enablers:
+    --ompss                                 Enables worker compilation with OmpSs Mercurium compiler
+                                            Default: Disabled
+    --cuda                                  Enables worker compilation with CUDA compilation flags
+                                            Default: Disabled
+    --opencl                                Enables worker compilation with openCL compilation flags
+                                            Default: Disabled
+    --with_ompss=<ompss_installation_path>  Enables worker compilation with OmpSs Mercurium compiler installed in a certain location
+                                            Default: Disabled
+    --mercurium_flgas="flags"               Specifies extra flags to pass to the mercurium compiler
+                                            Default: Empty
+    --with_cuda=<cuda_installation_path>    Enables worker compilation with CUDA installed in a certain location
+                                            Default: Disabled
+    --with_opencl=<ocl_installation_path>   Enables worker compilation with openCL installed in a certain location
+                                            Default: Disabled
+
+```
+To compile with only COMPSs application use the following command:
+
+```bash
+$ compss_build_app appName
+```
+To compile with a COMPSs application with fine-grain managed by OmpSs tasks use the following command:
+
+```bash
+$ compss_build_app --ompss appName
+```
+
+If there are fine-grain tasks which can be run in CUDA devices use the following command:
+
+```bash
+$ compss_build_app --ompss --cuda appName
 ```
 
 ### Application Execution
