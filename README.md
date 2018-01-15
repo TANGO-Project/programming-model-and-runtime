@@ -1,5 +1,5 @@
 # TANGO Programming Model and Runtime Abstraction Layer
-&copy; Barcelona Supercomputing Center 2016 -2017
+&copy; Barcelona Supercomputing Center 2016 - 2018
 
 ## Description
 
@@ -95,7 +95,7 @@ Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_n
                                             Default: Disabled
     --with_ompss=<ompss_installation_path>  Enables worker compilation with OmpSs Mercurium compiler installed in a certain location
                                             Default: Disabled
-    --mercurium_flgas="flags"               Specifies extra flags to pass to the mercurium compiler
+    --mercurium_flags="flags"               Specifies extra flags to pass to the mercurium compiler
                                             Default: Empty
     --with_cuda=<cuda_installation_path>    Enables worker compilation with CUDA installed in a certain location
                                             Default: Disabled
@@ -164,6 +164,52 @@ Other options available for enqueue_compss can be found by executing
 ```bash
 $ enqueue_compss --help
 ```
+###	Supporting Sigularity
+
+To run applications distributed in singularity containers, the user have to specify the image of this container with the container_image flag when submitting the application with the enqueue_compss command. The following lines show an example of this command:
+
+```bash
+$ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
+          --node-memory=32000 –container_image=/path/to/container.img  \
+          --lang=c appName appArgs
+```
+###	Enabling elasticity
+
+When submitting an execution users must indicate the number of fixed nodes requested in the enqueue_compss command. To enable node elasticity users should indicate with the –elasticity flags, the number of extra nodes that an application can request according to its load. An example of this option is shown below.
+
+```bash
+$ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
+          --node-memory=32000 --elasticity=2 --lang=c appName appArgs
+```
+In this case, the runtime automatically will calculate the optimal number of resources between 3 and 5. This option can be also be be combined with singularity by setting the elasticity and container_image options.
+
+```bash
+$ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
+          --node-memory=32000 --elasticity=2 \
+          --container_image=/path/to/container.img \
+          --lang=c appName appArgs
+```
+In the case that, users want to let another component such as the Self-Adaptation Manager/ALDE the responsibility to scale up/down the resources, the application must be submitted with the enable_external_adaptation option of the enqueue_compss command as indicated in the example below.
+
+```bash
+$ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
+       --node-memory=32000 --elasticity=2 --enable_external_adaptation=true \
+       --container_image=/path/to/container.img --lang=c appName appArgs
+```
+Then, when the application is running, the adaptation of the nodes can be performed by means of the adapt_compss_resources command in the following way
+
+```bash
+$ adapt_compss_resources <master_node> <master_job_id> CREATE SLURM-Cluster default <singularity_image>
+```
+This command will submit another job requesting a new resource of type "default" (the same as the requested in the enqueue_compss) running the COMPSs worker of the singularity_image.
+
+```bash
+$ adapt_compss_resources <master_node> <master_job_id> REMOVE SLURM-Cluster <node_to_delete>
+```
+###	Known Limitations
+
+C++ Objects declared as arguments in a coarse-grain tasks must be passed in the task methods as object pointers in order to have a proper dependency management. We are evaluating how to support other possibilities.
+
 ## Relation to other TANGO components
 
 TANGO Programming Model and the Runtime Abstraction Layer components must be used together as explained above. It can be combined with other TANGO components to achive more complex features:
