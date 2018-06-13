@@ -1,0 +1,4 @@
+The following features implemented in the COMPSs programming model and runtime has been implemented in the framework of the TANGO project:
+
+- Integration with OmpSs programming model
+- Support of CPU and GPU constraints
