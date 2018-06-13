@@ -4,3 +4,6 @@
 [submodule "OmpSs/mcxx"]
 	path = OmpSs/mcxx
 	url = https://github.com/TANGO-Project/mcxx.git
+[submodule "COMPSs_forked"]
+	path = COMPSs
+	url = https://github.com/TANGO-Project/compss.git
