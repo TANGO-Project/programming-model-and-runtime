@@ -34,10 +34,10 @@ mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/nanox
 cd ${src_path}/OmpSs/nanox
 if [ -d "${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/lib" ]; then
 	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make && make install"
-	autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make && make install clean
+	autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make -j2 && make install clean
 else
 	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make && make install"
-        autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make && make install clean
+        autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make -j2 && make install clean
 fi
 
 mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx
