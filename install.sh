@@ -23,7 +23,7 @@ mkdir -p ${prefix}/TANGO_ProgrammingModel/COMPSs
 cd ${src_path}/COMPSs/builders
 
 echo "./buildlocal $* ${prefix}/TANGO_ProgrammingModel/COMPSs "
-./buildlocal $* ${prefix}/TANGO_ProgrammingModel/COMPSs
+./buildlocal -P $* ${prefix}/TANGO_ProgrammingModel/COMPSs
  
 echo " Building OmpSs at ${prefix}/TANGO_ProgrammingModel/OmpSs from ${src_path}/OmpSs/"
 
