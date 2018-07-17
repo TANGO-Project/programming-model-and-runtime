@@ -88,6 +88,7 @@ To compile the application use the compss_build_app script. The usage of this co
 ```bash
 $ compss_build_app --help
 Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_name
+Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_name application_arguments
 
 * Options:
   General:
@@ -96,7 +97,11 @@ Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_n
     --opts                                  Show available options
 
     --version, -v                           Print COMPSs version
-
+  General Options:
+    --only-master                           Builds only the master part
+                                            Default: Disabled
+    --only-worker                           Builds only the worker part
+                                            Default: Disabled
   Tools enablers:
     --ompss                                 Enables worker compilation with OmpSs Mercurium compiler
                                             Default: Disabled
@@ -104,6 +109,27 @@ Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_n
                                             Default: Disabled
     --opencl                                Enables worker compilation with openCL compilation flags
                                             Default: Disabled
+  Specific compiler and linker flags:
+    --CXX=<C++ compiler>                    Defines an specific C++ compiler (cross_compiling)
+                                            Default: 
+    --CC=<C compiler>                       Defines and specific C compiler (cross_compiling)
+                                            Default: 
+    --CFLAGS="-cFlag_1 ... -cFlag_N"        Defines C compiler flags
+					    Default: 
+    --CXXFLAGS="-cxxflag_1 ... -cxxflag_N"  Defines C++ compiler flags
+                                            Default: 
+    --CPPFLAGS="-cppflag_1 ... -cppflag_N"  Defines C pre-processor flags
+                                            Default: 
+    --LDFLAGS="-ldflag_1 ... -ldflag_N"     Defines Linker flags
+                                            Default: 
+    --LIBS="-L<libPath> -l<lib> <stLib.a>"  Define libraries in the compilation
+                                            Default: -lpthread /home/jorgee/Shared/Projects/Tango/apps/libjpeg/lib64/libjpeg.a
+
+ Specific tools flags:
+    --MCC="Mercurium C compiler"            Specifies the mercurium C compiler profile (cross-compiling OmpSs)
+                                            Default: mcc
+    --MCXX="Mercurium C++ compiler"         Specifies the mercurium compiler profile (cross-compiling OmpSs)
+                                            Default: mcxx
     --with_ompss=<ompss_installation_path>  Enables worker compilation with OmpSs Mercurium compiler installed in a certain location
                                             Default: Disabled
     --mercurium_flags="flags"               Specifies extra flags to pass to the mercurium compiler
@@ -112,7 +138,8 @@ Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_n
                                             Default: Disabled
     --with_opencl=<ocl_installation_path>   Enables worker compilation with openCL installed in a certain location
                                             Default: Disabled
-
+    --opencl_libs="libs"		    Specifies extra opencl libraries locations
+					    Default: Empty
 ```
 To compile with only COMPSs application use the following command:
 
