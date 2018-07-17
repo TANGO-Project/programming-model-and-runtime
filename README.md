@@ -53,6 +53,17 @@ $./install.sh $HOME/TANGO --no-monitor --no-tracing
 
 $ sudo -E ./install.sh /opt/TANGO
 ```
+If you want to re-install only one part (COMPSs or OmpSs) you have to define the PM_BUILD environment variable before running the script. Values for the variable are ONLY_COMPSS, ONLY_OMPSS or ALL. Not defining de variable has the same effect as ALL
+
+```bash
+#User local installation
+
+$ PM_BUILD=ONLY_COMPSS ./install.sh $HOME/TANGO --no-monitor --no-tracing
+
+#System installation
+
+$ PM_BUILD=ONLY_COMPSS sudo -E ./install.sh /opt/TANGO
+```
 
 ## User Guide
 

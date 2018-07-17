@@ -15,35 +15,40 @@ fi
 if [ -d "${prefix}" ]; then
 	rm -rf ${prefix}
 fi
+if [ -z "${PM_BUILD}" ] || [ "${PM_BUILD}" == "ONLY_COMPSS" ] || [ "${PM_BUILD}" == "ALL" ]; then
+  # Build COMPSs 
+  echo " Building COMPSs at ${prefix}/TANGO_ProgrammingModel/COMPSs from ${src_path}/COMPSs/"
 
-# Build COMPSs 
-echo " Building COMPS at ${prefix}/TANGO_ProgrammingModel/COMPSs from ${src_path}/COMPSs/"
+  mkdir -p ${prefix}/TANGO_ProgrammingModel/COMPSs
+  cd ${src_path}/COMPSs/builders
 
-mkdir -p ${prefix}/TANGO_ProgrammingModel/COMPSs
-cd ${src_path}/COMPSs/builders
-
-echo "./buildlocal $* ${prefix}/TANGO_ProgrammingModel/COMPSs "
-./buildlocal -P $* ${prefix}/TANGO_ProgrammingModel/COMPSs
- 
-echo " Building OmpSs at ${prefix}/TANGO_ProgrammingModel/OmpSs from ${src_path}/OmpSs/"
-
-mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs
-
-mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/nanox
-
-cd ${src_path}/OmpSs/nanox
-if [ -d "${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/lib" ]; then
-	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make && make install"
-	autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make -j2 && make install clean
-else
-	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make && make install"
-        autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make -j2 && make install clean
+  echo "./buildlocal -P $* ${prefix}/TANGO_ProgrammingModel/COMPSs "
+  ./buildlocal -P $* ${prefix}/TANGO_ProgrammingModel/COMPSs
+  echo " COMPSs built! "
 fi
 
-mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx
+if [ -z "${PM_BUILD}" ] || [ "${PM_BUILD}" == "ONLY_OMPSS" ] || [ "${PM_BUILD}" == "ALL" ]; then
+ 
+  echo " Building OmpSs at ${prefix}/TANGO_ProgrammingModel/OmpSs from ${src_path}/OmpSs/"
 
-cd ${src_path}/OmpSs/mcxx
+  mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs
 
-echo "autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install"
+  mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/nanox
 
-autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install clean
+  cd ${src_path}/OmpSs/nanox
+  if [ -d "${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/lib" ]; then
+	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make && make install"
+	autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox --with-extrae=${prefix}/TANGO_ProgrammingModel/COMPSs/Dependencies/extrae/ && make -j2 && make install clean
+  else
+	echo "in $PWD running: autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make && make install"
+        autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox && make -j2 && make install clean
+  fi
+
+  mkdir -p ${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx
+
+  cd ${src_path}/OmpSs/mcxx
+
+  echo "autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install"
+
+  autoreconf -i && autoreconf -fiv; autoreconf -fiv && ./configure --prefix=${prefix}/TANGO_ProgrammingModel/OmpSs/mcxx --enable-ompss --with-nanox=${prefix}/TANGO_ProgrammingModel/OmpSs/nanox/ && make && make install clean
+fi
