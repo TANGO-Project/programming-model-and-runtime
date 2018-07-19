@@ -244,7 +244,111 @@ This command will submit another job requesting a new resource of type "default"
 ```bash
 $ adapt_compss_resources <master_node> <master_job_id> REMOVE SLURM-Cluster <node_to_delete>
 ```
-###	Known Limitations
+
+The same command can be used event without Slurm. In this case, the application will be started with runcompss with the flag --enable_external_adaptation=true and a project and resources file with a Direct Cloud conector defined. This conector will provide the capability of starting and stoping working nodes according to the adapt_compss_resources with the following arguments.
+
+```bash
+$ adapt_compss_resources <master_node> <AppName_execNum> CREATE Direct <node_to_start> default
+```
+The same changes apply to the remove command:
+
+```bash
+$ adapt_compss_resources <master_node> <AppName_execNum> REMOVE SLURM-Cluster <node_to_delete>
+``` 
+The following lines show an example of direct configuration in the resources.xml where we describe all the resources available in the insfrastructure.
+
+```xml
+<CloudProvider Name="Direct">
+        <Endpoint>
+            <Server></Server>
+            <ConnectorJar>direct-conn.jar</ConnectorJar>
+            <ConnectorClass>es.bsc.conn.direct.Direct</ConnectorClass>
+        </Endpoint>
+        <Images>
+            <Image Name="default">
+                <CreationTime>10</CreationTime>
+                <Software>
+                        <Application>JAVA</Application>
+                        <Application>PYTHON</Application>
+                        <Application>COMPSS</Application>
+                </Software>
+                <Adaptors>
+                        <Adaptor Name="es.bsc.compss.nio.master.NIOAdaptor">
+                                <SubmissionSystem>
+                                        <Interactive/>
+                                </SubmissionSystem>
+                                <Ports>
+                                        <MinPort>43001</MinPort>
+                                        <MaxPort>43002</MaxPort>
+                                </Ports>
+                        </Adaptor>
+                </Adaptors>
+                <SharedDisks>
+                        <AttachedDisk Name="gpfs">
+                                <MountPoint>/</MountPoint>
+                        </AttachedDisk>
+                </SharedDisks>
+            </Image>
+        </Images>
+        <InstanceTypes>
+            <InstanceType Name="ns51">
+                <Processor Name="MainProcessor">
+                        <ComputingUnits>12</ComputingUnits>
+                        <Architecture>Intel</Architecture>
+                        <Speed>2.6</Speed>
+                </Processor>
+                <Processor Name="GPU">
+                        <Type>GPU</Type>
+                        <ComputingUnits>2</ComputingUnits>
+                        <Architecture>k80</Architecture>
+                        <Speed>2.6</Speed>
+                </Processor>
+                <Memory>
+                        <Size>96</Size>
+                </Memory>
+            </InstanceType>
+
+            ...
+
+        </InstanceTypes>
+    </CloudProvider>
+```
+
+In the project.xml, we specify the resource we can add or remove in each execution. An example of project.xml is shown in the following lines
+
+```xml
+  <Cloud>
+        <InitialVMs>1</InitialVMs>
+        <MinimumVMs>1</MinimumVMs>
+        <MaximumVMs>4</MaximumVMs>
+        <CloudProvider Name="Direct">
+              <LimitOfVMs>4</LimitOfVMs>
+              <Properties>
+                        <Property>
+                               <Name>estimated-creation-time</Name>
+                               <Value>10</Value>
+                        </Property>
+              </Properties>
+              <Images>
+                        <Image Name="default">
+                                <InstallDir>/home_nfs/home_ejarquej/installations/2.3.1/COMPSs/</InstallDir>
+                                <WorkingDir>/tmp/compss_worker/</WorkingDir>
+                                <Application>
+                                        <AppDir>/home_nfs/home_ejarquej/emulate_remote_processing</AppDir>
+                                </Application>
+                        </Image>
+            </Images>
+            <InstanceTypes>
+                <InstanceType Name="ns51"/>
+                <InstanceType Name="ns55"/>
+                <InstanceType Name="ns56"/>
+                <InstanceType Name="ns57"/>
+            </InstanceTypes>
+        </CloudProvider>
+    </Cloud>
+```
+
+### Known Limitations
 
 C++ Objects declared as arguments in a coarse-grain tasks must be passed in the task methods as object pointers in order to have a proper dependency management. We are evaluating how to support other possibilities.
 
