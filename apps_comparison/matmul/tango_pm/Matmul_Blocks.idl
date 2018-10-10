@@ -1,0 +1,3 @@
+interface Matmul{
+	void multiplyBlocks(in double[M] blockA, in double[M] blockB, inout double[M] blockC, in int M);
+};

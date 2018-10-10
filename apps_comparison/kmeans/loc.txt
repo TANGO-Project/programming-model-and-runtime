@@ -1,0 +1,5 @@
+mpi 541
+omp 584 
+seq 468 
+cuda 591
+tango 484 

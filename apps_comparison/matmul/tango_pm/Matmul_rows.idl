@@ -1,0 +1,3 @@
+interface Matmul{
+	void multiplyBlocks(in double[rows] blockA, in double[matrixSize] blockB, inout double[rows] blockC, in int rows, in int matrixSize);
+};
