@@ -87,7 +87,6 @@ To compile the application use the compss_build_app script. The usage of this co
 
 ```bash
 $ compss_build_app --help
-Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_name
 Usage: /opt/COMPSs/Runtime/scripts/user/compss_build_app [options] application_name application_arguments
 
 * Options:
@@ -227,14 +226,18 @@ $ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
           --container_image=/path/to/container.img \
           --lang=c appName appArgs
 ```
-In the case that, users want to let another component such as the Self-Adaptation Manager/ALDE the responsibility to scale up/down the resources, the application must be submitted with the enable_external_adaptation option of the enqueue_compss command as indicated in the example below.
+###  Enabling adaptation from Self-Adaptation Manager
+In the case that, users want to let another component such as the Self-Adaptation Manager the responsibility to scale up/down the resources, the application must be submitted with the enable_external_adaptation option of the enqueue_compss command as indicated in the example below.
 
 ```bash
 $ enqueue_compss --num_nodes=3 --cpus-per-node=12 --gpus-per-node=2 \
        --node-memory=32000 --elasticity=2 --enable_external_adaptation=true \
        --container_image=/path/to/container.img --lang=c appName appArgs
 ```
-Then, when the application is running, the adaptation of the nodes can be performed by means of the adapt_compss_resources command in the following way
+Then, when the application is running, the adaptation of the nodes can be performed by means of the adapt_compss_resources command. The usage of this command depends on the underlying infrastructure manager
+
+#### Slurm managed cluster
+In the case where the computing infrastructure is managed by Slurm, the adapt_compss_resources must be invoked in the following way
 
 ```bash
 $ adapt_compss_resources <master_node> <master_job_id> CREATE SLURM-Cluster default <singularity_image>
@@ -245,6 +248,7 @@ This command will submit another job requesting a new resource of type "default"
 $ adapt_compss_resources <master_node> <master_job_id> REMOVE SLURM-Cluster <node_to_delete>
 ```
 
+#### No resource manager
 The same command can be used event without Slurm. In this case, the application will be started with runcompss with the flag --enable_external_adaptation=true and a project and resources file with a Direct Cloud conector defined. This conector will provide the capability of starting and stoping working nodes according to the adapt_compss_resources with the following arguments.
 
 ```bash
@@ -347,6 +351,79 @@ In the project.xml, we specify the resource we can add or remove in each executi
         </CloudProvider>
     </Cloud>
 ```
+### Multi-architecture build and execution
+
+During Y3, we have introduced a set of scripts to automate the build and execution of applications distributed across multiple architectures. 
+To build the application for multiple architectures, we have created the compss_build_app_multi_arch command. In this command, the user specifies the architecture for the different application components as indicated below. 
+
+```
+Usage: compss_build_app_multi_arch [options] application_name
+
+* Options:
+    General:
+    --help, -h                  Prints this help message
+    --opts                      Shows available options
+    --supported_arch            Shows supported architectures            
+    --master=arch1              Specifies the target architecture for which 
+                                the master is going to be build.
+                                Default: x86_64-suse-linux
+    --worker=<arch1,arch2,...>  Specifies the target architectures for which 
+                                the worker is going to be build. Each 
+                                architecture separated by ",".
+                                Default: x86_64-suse-linux
+    --only-master               Compiles only the master for the specified 
+                                architectures.
+    --only-worker               Compiles only the worker for the specified
+                                architectures.
+    --cfg=<path>                Specifies the location of the configuration 
+                                file that contains the environment to execute 
+                                when cross-compiling the application.
+                                In this BASH script functions named as the 
+                                target architecture are needed to set up the 
+                                environment.
+                                Default: /opt/COMPSs/Bindings/c/cfgs/compssrc
+```
+
+The following lines show an example where the master is compiled for an Intel architecture and the worker is compiled for an Intel and ARM 32bit architectures.
+
+```
+$> compss_build_app_multi_arch --master=x86_64-linux-gnu --worker=x86_64-linux-gnu,arm-linux-gnueabihf Matmul
+```
+
+More architectures can be managed by specifying a configuration file where different environment variables are defined to configure the cross-compilation for the different architectures. This configuration files is specified by the –cfg flag. The following lines show an example of how to define the cross-compilation and how to indicate the configuration flag in the build command.
+
+```
+$> cat arm_cc.cfg
+arm-linux-gnueabihf () {
+    export CC=arm-linux-gnueabihf-gcc
+    export CXX=arm-linux-gnueabihf-g++ 
+    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-armhf
+    export BOOST_LIB=/opt/install-arm/libboost
+    export TARGET_HOST=arm-linux-gnueabihf
+}
+
+$> compss_build_app_multi_arch --master=x86_64-linux-gnu --worker=x86_64-linux-gnu,arm-linux-gnueabihf –-cfg=arm_cc.cfg Matmul
+```
+
+A similar extension has been added to the enqueue_compss command to enable an execution with a heterogeneous reservation.  To define it, we have to run the enqueue_compss command with the –heterogeneous flag and indicating the type of resource you require for master and workers. An example of how to use this extension is shown below.
+
+```
+$ cat types.cfg
+
+type_1(){
+      cpus_per_node=16
+      gpus_per_node=2
+      node_memory=96
+}
+
+type_2(){
+      cpus_per_node=48
+      gpus_per_node=0
+      node_memory=128
+}
+
+$enqueue_compss --heterogeneous --master=type_1 --workers=type_1:2,type_2:2  --types_cfg=types.cfg --lang=c appName appArgs
+```
 
 ### Known Limitations
 
@@ -358,5 +435,5 @@ TANGO Programming Model and the Runtime Abstraction Layer components must be use
 
 * **ALDE** - TANGO Programming Model and Runtime will use ALDE to submit the code for compilation and packetization. Also it could be intereact with ALDE to submit the application directly to a TANGO compatible device supervisor.
 * **Device Supervisor** -  The TANGO Programming Model Runtime can interact directly with SLURM which is one TANGO Device Supervisor. Other device supervisors will be supported by means of ALDE. 
-* **Self-Adaptation Manager** - The TANGO Programming Model Runtime will interact with the Self-Adaptation Manager to optimize application execution in a TANGO compatible testbed.
-* **Monitor Infrastructure** - The TANGO Programming Model Runtime will interact with TANGO Monitor Infrastructure to obtain the energy consumption metrics in order to take runtime optimization decisions.
+* **Self-Adaptation Manager** - The TANGO Programming Model Runtime can interact with the Self-Adaptation Manager to optimize application execution in a TANGO compatible testbed.
+* **Monitor Infrastructure** - The TANGO Programming Model Runtime can interact with TANGO Monitor Infrastructure to obtain the energy consumption metrics in order to take runtime optimization decisions.
