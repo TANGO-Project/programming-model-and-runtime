@@ -12,9 +12,9 @@ if [ -z "$prefix" ]; then
 	exit 1
 fi
 
-if [ -d "${prefix}" ]; then
-	rm -rf ${prefix}
-fi
+#if [ -d "${prefix}" ]; then
+#	rm -rf ${prefix}
+#fi
 if [ -z "${PM_BUILD}" ] || [ "${PM_BUILD}" == "ONLY_COMPSS" ] || [ "${PM_BUILD}" == "ALL" ]; then
   # Build COMPSs 
   echo " Building COMPSs at ${prefix}/TANGO_ProgrammingModel/COMPSs from ${src_path}/COMPSs/"
